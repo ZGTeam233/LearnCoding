@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/HelloWorld/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/HelloWorld/app/build" />
+      <excludeFolder url="file://$MODULE_DIR$/HelloWorld/build" />
+      <excludeFolder url="file://$MODULE_DIR$/LearnKotlin/out" />
+      <excludeFolder url="file://$MODULE_DIR$/LearnTk/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/circle/cmake-build-debug/.cmake" />
+      <excludeFolder url="file://$MODULE_DIR$/circle/cmake-build-debug/CMakeFiles" />
+      <excludeFolder url="file://$MODULE_DIR$/circle/cmake-build-debug/Testing" />
+      <excludeFolder url="file://$MODULE_DIR$/guess/cmake-build-debug/.cmake" />
+      <excludeFolder url="file://$MODULE_DIR$/guess/cmake-build-debug/CMakeFiles" />
+      <excludeFolder url="file://$MODULE_DIR$/guess/cmake-build-debug/Testing" />
+      <excludeFolder url="file://$MODULE_DIR$/prime/cmake-build-debug/.cmake" />
+      <excludeFolder url="file://$MODULE_DIR$/prime/cmake-build-debug/CMakeFiles" />
+      <excludeFolder url="file://$MODULE_DIR$/prime/cmake-build-debug/Testing" />
+      <excludeFolder url="file://$MODULE_DIR$/trifx/cmake-build-debug/.cmake" />
+      <excludeFolder url="file://$MODULE_DIR$/trifx/cmake-build-debug/CMakeFiles" />
+      <excludeFolder url="file://$MODULE_DIR$/trifx/cmake-build-debug/Testing" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
