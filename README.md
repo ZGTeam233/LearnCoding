@@ -11,4 +11,4 @@
 #### 部分运行效果展示
 `/LearnTk/main.py`展示
 
-![pic](/.images/001.png)
+![pic](/images/001.png)
