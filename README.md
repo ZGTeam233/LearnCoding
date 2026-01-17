@@ -6,7 +6,8 @@
 #### 在学……
 - Python
 - C
-- Android 和 Kotlin
+- Android
+- Kotlin
 
 #### 部分运行效果展示
 `/LearnTk/main.py`展示
