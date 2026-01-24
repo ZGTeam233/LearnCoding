@@ -1,9 +1,12 @@
-class Student(val stu_number: String, val grade: Int, name: String, age: Int) : Person(stu_number, age) {
+class Student(val sno: String = "", val grade: Int = 0, name: String = "", age: Int = 0) : Person(name, age), Study {
     init {
-        println("Student number is $stu_number")
+        println("Student number is $sno")
         println("Grade is $grade")
     }
-    constructor(name: String, age: Int) : this("", 0, name, age) {
+    override fun readBooks() {
+        println("$name is reading.")
     }
-    constructor() : this("", 0)
+    override fun doHomework() {
+        println("$name is doing homework.")
+    }
 }
