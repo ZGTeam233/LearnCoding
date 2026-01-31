@@ -1,3 +1,5 @@
+### [***请先看这个***](https://github.com/ZGTeam233/README)
+
 ***许可证更新为Apache-2.0***
 
 Copyright(c) 2025-2026 Zilin Zheng 版权所有
