@@ -1,4 +1,6 @@
-注：Git中作者改为真名（Name），即版权声明里的Zilin Zheng ~~666还有实名上网~~
+***许可证更新为Apache-2.0***
+
+Copyright(c) 2025-2026 Zilin Zheng 版权所有
 
 # LearnCoding
 这是我学习编程的所有项目的整合，什么都有
@@ -8,6 +10,7 @@
 - C
 - Android
 - Kotlin
+- HTML
 
 #### 部分运行效果展示
 `/LearnTk/main.py`展示

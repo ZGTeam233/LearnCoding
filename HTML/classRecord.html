@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逆转！学霸法庭记录 - 呈上证据！</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 基础与主题变量 (法庭主题) --- */
+        :root {
+            --primary-color: #3b5998; /* 辩护方蓝色 (成步堂) */
+            --secondary-color: #cc0000; /* 异议红色 (御剑) */
+            --header-bg: #444444; /* 法庭木板深色 */
+            --wood-dark: #222222;
+            --wood-light: #aaaaaa;
+            --text-dark: #111111;
+            --text-light: #ffffff;
+            --panel-bg: #fdfaf2; /* 记录纸张色 */
+            --table-header-bg: #667799; /* 记录板蓝色 */
+            --font-pixel: 'Press Start 2P', cursive;
+            --font-stardew: 'DotGothic16', sans-serif;
+            --court-yellow: #FFCC33; /* 证据黄色 */
+        }
+
+        /* --- 全局样式和背景 (法庭背景) --- */
+        body {
+            font-family: var(--font-stardew);
+            background-image: url('https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/6c74bad0ead845a88caf37c4f87420aa.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251121231553726E30B60DD9B8819A95&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1764342953&x-signature=LSNt9E7%2BG40BeV0XTY2kTY1crS8%3D');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden; 
+        }
+
+        .tracker-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--panel-bg);
+            border-radius: 0; /* 消除圆角 */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            border: 5px solid var(--wood-dark); /* 粗边框 */
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- 头部和日期选择 --- */
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            background: var(--header-bg);
+            border-radius: 0;
+            padding: 15px 10px;
+            box-shadow: 0 5px 0 var(--wood-dark); /* 3D效果 */
+            border: 3px solid var(--wood-dark);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        h1 {
+            font-family: var(--font-pixel);
+            color: var(--court-yellow);
+            margin: 0;
+            font-size: 1.6rem;
+            text-shadow: 3px 3px var(--secondary-color); /* 红色阴影 */
+        }
+        h1::before {
+            content: "🚨 异议！";
+            font-size: 1.2rem;
+            margin-right: 15px;
+            color: var(--secondary-color);
+        }
+
+        #date-selector {
+            background-color: var(--panel-bg);
+            border: 2px solid var(--wood-dark);
+            border-radius: 0;
+            padding: 8px 12px;
+            font-family: var(--font-stardew);
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* --- 数据可视化区域 --- */
+        #chart-panel {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 18px;
+            background-color: #cfd8dc; /* 证据台浅色 */
+            border-radius: 0;
+            border: 3px dashed var(--wood-dark);
+        }
+        .chart-box {
+            flex: 1;
+            min-width: 300px;
+        }
+        .chart-box h3 {
+            font-family: var(--font-pixel);
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            text-shadow: 1px 1px #fff;
+        }
+        .chart-container {
+            height: 200px;
+        }
+
+        /* --- 批量操作和数据管理 (法槌操作) --- */
+        #control-panel {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .control-group button, .data-button {
+            background-color: var(--primary-color); /* 辩护蓝色 */
+            color: var(--text-light);
+            border: none;
+            border-bottom: 4px solid var(--wood-dark);
+            border-right: 2px solid var(--wood-dark);
+            border-radius: 0;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-family: var(--font-pixel); /* 像素字体用于按钮 */
+            font-size: 0.7rem;
+            transition: background-color 0.1s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-group button:active, .data-button:active {
+            transform: translateY(2px);
+            border-bottom: 2px solid var(--wood-dark);
+        }
+
+        /* --- 表格样式 (证物清单) --- */
+        .table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 3px solid var(--wood-dark);
+            border-radius: 0;
+            background-color: #f0f0f0;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .student-table th, .student-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .student-table th {
+            background-color: var(--table-header-bg);
+            color: var(--court-yellow);
+            text-shadow: 1px 1px var(--wood-dark);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .student-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* 复选框样式 (证物印章) */
+        .checkbox-container {
+            display: block;
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 22px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 25px;
+            width: 25px;
+            background-color: #d4d4d4; 
+            border-radius: 0; /* 变方 */
+            border: 2px solid #888;
+        }
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+        .checkbox-container input:checked ~ .checkmark { 
+            background-color: var(--court-yellow); /* 盖章后的黄色 */
+            border-color: #b39433;
+        }
+        .checkbox-container input.review:checked ~ .checkmark { 
+            background-color: var(--secondary-color); /* 异议的红色 */
+            border-color: #990000;
+        }
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+        .checkbox-container .checkmark:after {
+            left: 9px;
+            top: 5px;
+            width: 8px;
+            height: 15px;
+            border: solid var(--wood-dark);
+            border-width: 0 4px 4px 0;
+            -webkit-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+        }
+        
+        /* --- NPC 评语弹窗 (法庭对话框) --- */
+        #npc-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        #npc-dialog-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .npc-dialog {
+            background: #e0f2f1; /* 浅青色对话框 */
+            border: 6px solid var(--primary-color); /* 蓝色边框 */
+            box-shadow: 0 0 0 2px var(--wood-dark);
+            border-radius: 0;
+            max-width: 450px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .npc-dialog::before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 15px 15px 15px;
+            border-style: solid;
+            border-color: transparent transparent var(--primary-color) transparent;
+        }
+        .npc-dialog img {
+            width: 100px;
+            height: 100px;
+            border: 4px solid var(--secondary-color); /* 红色边框 */
+            border-radius: 0;
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+        .npc-dialog h3 { 
+            font-family: var(--font-pixel); 
+            color: var(--secondary-color); 
+            font-size: 1.3rem; 
+            margin: 0 0 10px 0;
+        }
+        .npc-dialog p {
+            font-family: var(--font-stardew);
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin: 0 0 20px 0;
+            line-height: 1.4;
+        }
+        .npc-dialog button {
+            background-color: var(--secondary-color); /* 红色按钮 */
+            color: white;
+            font-family: var(--font-pixel);
+            font-size: 0.8rem;
+            border: none;
+            border-bottom: 3px solid #990000;
+            border-radius: 0;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .npc-dialog button:active {
+            transform: translateY(2px);
+            border-bottom: 1px solid #990000;
+        }
+
+        /* --- 响应式设计 --- */
+        @media (max-width: 768px) {
+            .tracker-container {
+                padding: 15px;
+                border-width: 3px;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+            #chart-panel {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .chart-box {
+                min-width: auto;
+            }
+            .control-group {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .control-group button, .data-button {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+            .student-table th, .student-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="tracker-container">
+        <header>
+            <h1>学霸法庭记录</h1>
+            <input type="date" id="date-selector">
+        </header>
+
+        <div id="chart-panel">
+            <div class="chart-box">
+                <h3>当日证据呈上率 (学生数 / 总数)</h3>
+                <div class="chart-container">
+                    <canvas id="daily-completion-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-box">
+                <h3>历史辩护趋势 (近7日)</h3>
+                <div class="chart-container">
+                    <canvas id="historical-trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div id="control-panel">
+            <div class="control-group">
+                <button id="batch-recitation-toggle">
+                    <i class="fa-solid fa-gavel"></i> 呈上证据 (全选/清空)
+                </button>
+                <button id="batch-review-toggle">
+                    <i class="fa-solid fa-hand-point-up"></i> 核心证言 (全选/清空)
+                </button>
+            </div>
+            
+            <div class="control-group">
+                <button id="export-data" class="data-button">
+                    <i class="fa-solid fa-file-export"></i> 导出卷宗 (JSON)
+                </button>
+                <label for="import-file" class="data-button">
+                    <i class="fa-solid fa-file-import"></i> 导入卷宗
+                </label>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="student-table" id="tracker-table">
+                <thead>
+                    <tr>
+                        <th>编号</th>
+                        <th>受审学生</th>
+                        <th>证物 (Recitation)</th>
+                        <th>证言 (Review)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    
+    <div id="npc-dialog-overlay">
+        <div class="npc-dialog">
+            <img id="npc-avatar" src="" alt="角色立绘">
+            <h3 id="npc-name"></h3>
+            <p id="npc-quote"></p>
+            <button onclick="hideNpcDialog()">明白了！</button>
+        </div>
+    </div>
+
+<script>
+    // --- 1. 学生名单 (已更新) ---
+    const STUDENT_LIST = [
+        "stu1", "stu2", "stu3"
+    ];
+    const TOTAL_STUDENTS = STUDENT_LIST.length; // 49 人
+    const STORAGE_KEY = 'aceAttorneyTaskTrackerData'; 
+
+    // --- 2. 角色数据和台词 (逆转裁判主题) ---
+    const NPC_DATA = [
+        { name: "成步堂 龙一", image: "https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/e9cb0f8f2fff433c99744a9143356a82.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251121230214E24F9DDCD03F26C16B11&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1764342135&x-signature=LPlRj%2BvQmCxI1EP9olVNt939deo%3D", quotes: ["太棒了！真相只有一个，而你就是证据！", "这是完美的证据，法庭会接纳的！"] },
+        { name: "御剑 怜侍", image: "https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/0a361303ae70465f854959b46c03b086.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251121230214E24F9DDCD03F26C16B11&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1764342135&x-signature=Mlbx%2BSWhEoaJUdeAdZLop%2B2RL80%3D", quotes: ["哼。勉强可以作为证据呈上。记住，完美主义是我的信条。", "很好，你没有让我失望。这次我不会提出异议了。"] },
+        { name: "绫里 真宵", image: "https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/b0d5d6b74c284eb699ff569353209781.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251121230214E24F9DDCD03F26C16B11&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1764342135&x-signature=pAEzRhgPkf6k3wFsGWiddJxwTEY%3D", quotes: ["哇！太厉害了成步堂君！你成功将证据呈上去了呢！", "啊，肚子饿了！但看到你完成任务，我的心也被治愈了！"] },
+        { name: "法官", image: "https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/2de8316e0e7c41e98d259d3a83852ba5.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251121231553726E30B60DD9B8819A95&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1764342953&x-signature=ekz%2F%2B1wwvpBh5sXLpSDQoPbE44w%3D", quotes: ["很好，法庭接纳了这项证物！请继续保持！", "判你通过！这是法庭的决定，不可动摇！"] },
+        { name: "狩魔 冥", image: "https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/4723d6f0c4314acdac64f1e8af069509.jpg~tplv-a9rns2rl98-24:720:720.png?rcl=20251121230214E24F9DDCD03F26C16B11&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1764342135&x-signature=f8KywN6r%2FRPVYFeiI%2Bs%2FP6MWIgw%3D", quotes: ["闭嘴！这种程度的证物，也配让我挥动鞭子吗？不过...做得还算合格。", "你的努力没有白费。我承认你的成果。"] },
+        { name: "糸锯 圭介", image: "https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/fff7c2b5007a40e380c5da22aae827e6.png~tplv-a9rns2rl98-24:720:720.png?rcl=20251121230214E24F9DDCD03F26C16B11&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1764342135&x-signature=lhxnSygoyQ4Q94hwtRFirZ3LxAk%3D", quotes: ["多亏了你，成步堂先生！这个证据能帮上大忙的！刑警的直觉告诉我，这是真的！", "啊咧？我肚子饿了。不过，你的任务完成了，太好了，是吧！"] },
+    ];
+
+    // --- 3. 状态变量和 Chart 实例 ---
+    let currentData = {}; 
+    let dailyChart, historicalChart;
+
+    // --- 4. DOM 元素缓存 ---
+    const dom = {};
+
+    // --- 5. 辅助函数 ---
+
+    /** 格式化日期为 YYYY-MM-DD 字符串 */
+    function formatDate(dateObj) {
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    /** 获取指定日期前N天的日期数组 (YYYY-MM-DD) */
+    function getLastNDays(startDay, nDays) {
+        const dates = [];
+        let date = new Date(startDay);
+        date.setDate(date.getDate() - (nDays - 1)); 
+
+        for (let i = 0; i < nDays; i++) {
+            dates.push(formatDate(date));
+            date.setDate(date.getDate() + 1);
+        }
+        return dates;
+    }
+
+    // --- 6. 数据持久化 ---
+
+    /** 从 localStorage 加载所有数据。*/
+    function loadAllData() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        try {
+            return stored ? JSON.parse(stored) : {};
+        } catch (e) {
+            console.error("Error parsing stored data, returning empty object:", e);
+            return {};
+        }
+    }
+
+    /** 保存当前日期的数据到 localStorage。*/
+    function saveCurrentData() {
+        const selectedDate = dom.dateSelector.value;
+        if (!selectedDate) return;
+
+        const allData = loadAllData();
+        allData[selectedDate] = currentData;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+    }
+
+    // --- 7. 核心渲染和加载逻辑 ---
+
+    /** 加载并渲染特定日期的任务状态。*/
+    function loadAndRender(dateString) {
+        const allData = loadAllData();
+        const savedDayData = allData[dateString] || {};
+
+        currentData = {};
+
+        STUDENT_LIST.forEach(name => {
+            currentData[name] = savedDayData[name] || { recitation: false, review: false };
+        });
+
+        renderTable();
+        updateCharts(allData);
+    }
+
+    /** 渲染学生列表和复选框。*/
+    function renderTable() {
+        dom.tableBody.innerHTML = '';
+
+        STUDENT_LIST.forEach((name, index) => {
+            const status = currentData[name];
+            const row = dom.tableBody.insertRow();
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${name}</td>
+                <td>
+                    <label class="checkbox-container">
+                        <input type="checkbox" data-student="${name}" data-task="recitation" ${status.recitation ? 'checked' : ''}>
+                        <span class="checkmark"></span>
+                    </label>
+                </td>
+                <td>
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="review" data-student="${name}" data-task="review" ${status.review ? 'checked' : ''}>
+                        <span class="checkmark review"></span>
+                    </label>
+                </td>
+            `;
+        });
+        document.querySelectorAll('#tracker-table input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', handleCheckboxChange);
+        });
+    }
+
+    // --- 8. 图表和可视化 ---
+
+    /**
+     * 初始化 Chart.js 实例。
+     */
+    function initializeCharts(allData) {
+        const dailyCtx = document.getElementById('daily-completion-chart').getContext('2d');
+        const historicalCtx = document.getElementById('historical-trend-chart').getContext('2d');
+
+        // 1. 当日完成率饼图 (Doughnut Chart)
+        dailyChart = new Chart(dailyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['证物呈上', '证物缺失', '证言确认', '证言存疑'],
+                datasets: [{
+                    data: [0, TOTAL_STUDENTS, 0, TOTAL_STUDENTS], 
+                    backgroundColor: [
+                        '#3b5998',      // 蓝色 (证物)
+                        '#e0e0e0',      // 灰色 (缺失)
+                        '#cc0000',      // 红色 (证言)
+                        '#cccccc'       // 深灰色 (存疑)
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { font: { family: 'var(--font-stardew)' } }
+                    },
+                    title: { display: false }
+                }
+            }
+        });
+
+        // 2. 历史趋势图 (Line Chart)
+        historicalChart = new Chart(historicalCtx, {
+            type: 'line',
+            data: {
+                labels: [], 
+                datasets: [
+                    {
+                        label: '证物呈上率 (%)',
+                        data: [],
+                        borderColor: '#3b5998',
+                        backgroundColor: 'rgba(59, 89, 152, 0.2)',
+                        tension: 0.2
+                    },
+                    {
+                        label: '证言确认率 (%)',
+                        data: [],
+                        borderColor: '#cc0000',
+                        backgroundColor: 'rgba(204, 0, 0, 0.2)',
+                        tension: 0.2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        title: { display: true, text: '完成率 (%)' }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: false }
+                }
+            }
+        });
+        
+        updateCharts(allData);
+    }
+
+    /** * 计算并更新所有图表数据。
+     * @param {object} allData 所有历史数据
+     */
+    function updateCharts(allData) {
+        if (!dailyChart || !historicalChart) return;
+
+        // --- 1. 计算当日完成率 ---
+        let recitationCompleted = 0;
+        let reviewCompleted = 0;
+
+        STUDENT_LIST.forEach(name => {
+            if (currentData[name].recitation) recitationCompleted++;
+            if (currentData[name].review) reviewCompleted++;
+        });
+
+        // Pie Chart Data - 直接使用学生数量
+        dailyChart.data.datasets[0].data = [
+            recitationCompleted, 
+            TOTAL_STUDENTS - recitationCompleted, 
+            reviewCompleted, 
+            TOTAL_STUDENTS - reviewCompleted
+        ];
+        dailyChart.update();
+        
+        // --- 2. 计算历史趋势图数据 ---
+        const today = dom.dateSelector.value;
+        const last7Days = getLastNDays(today, 7);
+        const recitationRates = [];
+        const reviewRates = [];
+
+        last7Days.forEach(date => {
+            const dayData = allData[date] || {};
+            let rCount = 0;
+            let rvCount = 0;
+            
+            STUDENT_LIST.forEach(name => {
+                const status = dayData[name];
+                if (status && status.recitation) rCount++;
+                if (status && status.review) rvCount++;
+            });
+
+            // 计算百分比并保留一位小数
+            const rRate = TOTAL_STUDENTS > 0 ? (rCount / TOTAL_STUDENTS) * 100 : 0;
+            const rvRate = TOTAL_STUDENTS > 0 ? (rvCount / TOTAL_STUDENTS) * 100 : 0;
+
+            recitationRates.push(parseFloat(rRate.toFixed(1)));
+            reviewRates.push(parseFloat(rvRate.toFixed(1)));
+        });
+
+        // Line Chart Data
+        historicalChart.data.labels = last7Days.map(d => d.substring(5)); // 显示 月-日 (M-D)
+        historicalChart.data.datasets[0].data = recitationRates;
+        historicalChart.data.datasets[1].data = reviewRates;
+        historicalChart.update();
+    }
+
+    // --- 9. 角色对话功能 ---
+
+    function showNpcDialog(npcName, quote) {
+        // 使用includes来匹配包含中文名的NPC
+        const npc = NPC_DATA.find(n => n.name.includes(npcName.split('(')[0].trim()));
+        if (!npc) {
+            const defaultNpc = NPC_DATA.find(n => n.name.includes("法官"));
+            dom.npcAvatar.src = defaultNpc.image;
+            dom.npcName.textContent = defaultNpc.name;
+            dom.npcQuote.textContent = "法庭相信你的判断！这个证据/证言将被记录在案！";
+        } else {
+            dom.npcAvatar.src = npc.image;
+            dom.npcAvatar.alt = npc.name;
+            dom.npcName.textContent = npc.name;
+            dom.npcQuote.textContent = quote;
+        }
+
+        dom.npcDialogOverlay.classList.add('show');
+    }
+
+    window.hideNpcDialog = function() {
+        dom.npcDialogOverlay.classList.remove('show');
+    }
+
+    function getRandomNpcComment() {
+        const randomNpc = NPC_DATA[Math.floor(Math.random() * NPC_DATA.length)];
+        const randomQuote = randomNpc.quotes[Math.floor(Math.random() * randomNpc.quotes.length)];
+        return { name: randomNpc.name, quote: randomQuote };
+    }
+
+
+    // --- 10. 事件处理 ---
+
+    /** 处理单个复选框变化。*/
+    function handleCheckboxChange(event) {
+        const checkbox = event.target;
+        const studentName = checkbox.dataset.student;
+        const task = checkbox.dataset.task;
+        const isChecked = checkbox.checked;
+
+        if (currentData[studentName]) {
+            const previousState = currentData[studentName][task];
+            currentData[studentName][task] = isChecked;
+
+            saveCurrentData();
+            updateCharts(loadAllData()); 
+
+            if (isChecked && !previousState) {
+                const { name, quote } = getRandomNpcComment();
+                showNpcDialog(name, quote);
+            }
+        }
+    }
+    
+    /**
+     * 批量切换任务状态。
+     */
+    function handleBatchToggle(taskType) {
+        const checkboxes = document.querySelectorAll(`input[data-task="${taskType}"]`);
+        
+        const shouldCheckAll = Array.from(checkboxes).some(cb => !cb.checked);
+        
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked !== shouldCheckAll) {
+                checkbox.checked = shouldCheckAll;
+                const studentName = checkbox.dataset.student;
+                currentData[studentName][taskType] = shouldCheckAll;
+            }
+        });
+
+        saveCurrentData();
+        updateCharts(loadAllData());
+        
+        const taskName = taskType === 'recitation' ? '证物' : '证言';
+        alert(`🚨 异议！法庭已下令，对所有学生的【${taskName}】执行${shouldCheckAll ? '呈上' : '清空'}！`);
+    }
+
+    // --- 11. 数据导入/导出 (卷宗管理) ---
+
+    /** 导出所有数据为 JSON 文件。*/
+    function exportData() {
+        const allData = loadAllData();
+        const jsonString = JSON.stringify(allData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        
+        const fileName = `ace_attorney_case_file_${formatDate(new Date())}.json`;
+        
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+        
+        alert("卷宗已成功导出为 " + fileName + "。请妥善保管！");
+    }
+
+    /** 导入 JSON 文件中的数据。*/
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (typeof importedData !== 'object' || Array.isArray(importedData)) {
+                    throw new Error("导入的卷宗格式不正确。");
+                }
+                
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData));
+                
+                const currentDay = dom.dateSelector.value;
+                loadAndRender(currentDay);
+                alert("法庭卷宗导入成功！所有记录已更新。");
+
+            } catch (error) {
+                console.error("卷宗导入失败:", error);
+                alert("卷宗导入失败。请确保文件是有效的 JSON 格式。\n错误信息: " + error.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+
+    // --- 12. 初始化 ---
+
+    function initialize() {
+        // 缓存 DOM 元素
+        dom.dateSelector = document.getElementById('date-selector');
+        dom.tableBody = document.getElementById('table-body');
+        dom.npcDialogOverlay = document.getElementById('npc-dialog-overlay');
+        dom.npcAvatar = document.getElementById('npc-avatar');
+        dom.npcName = document.getElementById('npc-name');
+        dom.npcQuote = document.getElementById('npc-quote');
+
+        // 设置默认日期和最大日期
+        const today = new Date();
+        const todayString = formatDate(today);
+        dom.dateSelector.value = todayString;
+        dom.dateSelector.max = todayString;
+
+        // 监听事件
+        dom.dateSelector.addEventListener('change', (e) => loadAndRender(e.target.value));
+        document.getElementById('batch-recitation-toggle').addEventListener('click', () => handleBatchToggle('recitation'));
+        document.getElementById('batch-review-toggle').addEventListener('click', () => handleBatchToggle('review'));
+        document.getElementById('export-data').addEventListener('click', exportData);
+        document.getElementById('import-file').addEventListener('change', importData);
+
+        // 首次加载和渲染
+        const allData = loadAllData();
+        loadAndRender(todayString);
+        initializeCharts(allData);
+    }
+
+    // 页面加载完成后执行初始化
+    document.addEventListener('DOMContentLoaded', initialize);
+
+</script>
+
+</body>
+</html>
