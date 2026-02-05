@@ -1,5 +1,6 @@
 package com.github.zgteam233.activitytest
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -27,8 +28,11 @@ class FirstActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.add_item -> Toast.makeText(this, "你点了添加", Toast.LENGTH_SHORT).show()
-            R.id.remove_item -> Toast.makeText(this, "你点了移除", Toast.LENGTH_SHORT).show()
+            R.id.add_item -> {
+                val intent = Intent(this, SecondActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.remove_item -> finish()
         }
         return true
     }
