@@ -20,9 +20,9 @@ int main() {
             attempts++;
 
             if (guess < password[round])
-            {printf("Too low! Try again.\n");} // 猜测过低
+                printf("Too low! Try again.\n"); // 猜测过低
             else if (guess > password[round])
-            {printf("Too high! Try again.\n");} // 猜测过高
+                printf("Too high! Try again.\n"); // 猜测过高
             else {
                 // 猜测正确
                 printf("Congratulations! You've guessed the correct number: %d\n", password[round]);
