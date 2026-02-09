@@ -14,6 +14,10 @@
         <activity
                 android:name=".SecondActivity"
                 android:exported="false">
+            <intent-filter>
+                <action android:name="com.github.zgteam233.ACTION_START"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
         <activity
                 android:name=".FirstActivity"
