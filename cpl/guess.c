@@ -3,7 +3,7 @@
 int main() {
     int guess = 0;
     int attempts = 0; // 猜测次数
-    int password[5] = {42, 15, 7, 93, 28}; // 猜数字游戏答案
+    const int password[5] = {42, 15, 7, 93, 28}; // 猜数字游戏答案
     int round = 0; // 当前轮数
     int choice;
 

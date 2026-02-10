@@ -8,16 +8,16 @@
 
 int main() {
     //初始化 initialization
-    double COS0 = sqrt(1 - SIN0 * SIN0);
-    double TAN0 = SIN0 / COS0;
-    double DEG0 = 1.0 / 60.0;
+    const double cos0 = sqrt(1 - SIN0 * SIN0);
+    const double tan0 = SIN0 / cos0;
+    const double deg0 = 1.0 / 60.0;
     printf("Minute = 1\n");
-    printf("Degree(1') = %.6f\n", DEG0);
+    printf("Degree(1') = %.6f\n", deg0);
     printf("Sine(1') = %.4f\n", SIN0);
-    printf("Cosine(1') = %.4f\n", COS0);
-    printf("Tangent(1') = %.4f\n", TAN0);
+    printf("Cosine(1') = %.4f\n", cos0);
+    printf("Tangent(1') = %.4f\n", tan0);
     double sine = SIN0;
-    double cosine = COS0;
+    double cosine = cos0;
     double tangent;
     double degree;
 
@@ -25,7 +25,7 @@ int main() {
     int n=2;
     do {
         //计算 calculate
-        sine = SIN0 * cosine + COS0 * sine;
+        sine = SIN0 * cosine + cos0 * sine;
         cosine = sqrt(1 - sine * sine);
         tangent = sine / cosine;
         degree = n / 60.0;
