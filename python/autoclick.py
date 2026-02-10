@@ -2,7 +2,7 @@ import pyautogui
 import time
 
 #初始化
-print("This is a script to automatically click.\n\tCopyright(c) 2026 Zilin Zheng, MIT Licence.")
+print("This is a script to automatically click.\n\tCopyright(c) 2026 Zilin Zheng,\n\tunder Apache-2.0 license.")
 width = input("\nPlease enter the width. Default is 800px: ")
 if width == "" :
     width = 800
