@@ -4,38 +4,38 @@ using namespace std;
 
 int checkLevel() {
 	int grade;
-	std::cout << "Enter your grade (0-100): ";
-	std::cin >> grade;
+	cout << "\nEnter your grade (0-100): ";
+	cin >> grade;
 	if (grade > 100 || grade < 0) {
-		std::cout << "Invalid grade. Please enter a number between 0 and 100.\n";
 		return 1; // 带错误退出函数
 	}
 	switch (grade / 10) {
 	case 10:
 	case 9:
-		std::cout << "Grade level: A, outstanding\n";
+		cout << "Grade level: A, outstanding\n";
 		break;
 	case 8:
-		std::cout << "Grade level: B, exceeded expectations\n";
+		cout << "Grade level: B, exceeded expectations\n";
 		break;
 	case 7:
-		std::cout << "Grade level: C, accept\n";
+		cout << "Grade level: C, accept\n";
 		break;
 	case 6:
-		std::cout << "Grade level: D, poor\n";
+		cout << "Grade level: D, poor\n";
 		break;
 	default:
-		std::cout << "Grade level: E, dreadful\n";
+		cout << "Grade level: E, dreadful\n";
 		break;
 	}
+	return 0; // 正常退出函数
 }
 
 void checkScholarship() {
-
+	cout << "Scholarship check function is not implemented yet.\n";
 }
 
 void showEvaluation() {
-
+	cout << "This semester's evaluation: Keep up the good work!\n";
 }
 
 int main() {
@@ -52,7 +52,10 @@ int main() {
 
 		switch (choice) {
 		case 1:
-			checkLevel();
+			while (checkLevel() == 1) {
+				// 重新调用函数让用户输入正确的成绩
+				cout << "Invalid grade. Please enter a number between 0 and 100.\n";
+			}
 			break;
 		case 2:
 			checkScholarship();
