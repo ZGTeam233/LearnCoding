@@ -1,20 +1,71 @@
-﻿// CppGrade.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-//
+﻿#include <iostream>
 
-#include <iostream>
+using namespace std;
 
-int main()
-{
-    std::cout << "Hello World!\n";
+int checkLevel() {
+	int grade;
+	std::cout << "Enter your grade (0-100): ";
+	std::cin >> grade;
+	if (grade > 100 || grade < 0) {
+		std::cout << "Invalid grade. Please enter a number between 0 and 100.\n";
+		return 1; // 带错误退出函数
+	}
+	switch (grade / 10) {
+	case 10:
+	case 9:
+		std::cout << "Grade level: A, outstanding\n";
+		break;
+	case 8:
+		std::cout << "Grade level: B, exceeded expectations\n";
+		break;
+	case 7:
+		std::cout << "Grade level: C, accept\n";
+		break;
+	case 6:
+		std::cout << "Grade level: D, poor\n";
+		break;
+	default:
+		std::cout << "Grade level: E, dreadful\n";
+		break;
+	}
 }
 
-// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
-// 调试程序: F5 或调试 >“开始调试”菜单
+void checkScholarship() {
 
-// 入门使用技巧: 
-//   1. 使用解决方案资源管理器窗口添加/管理文件
-//   2. 使用团队资源管理器窗口连接到源代码管理
-//   3. 使用输出窗口查看生成输出和其他消息
-//   4. 使用错误列表窗口查看错误
-//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
-//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
+}
+
+void showEvaluation() {
+
+}
+
+int main() {
+	int choice;
+
+	while (true) {
+		cout << "\nPlease select an action to perform(enter a number 1 - 4):\n";
+		cout << "1. Check grade level\n";
+		cout << "2. Determine if scholarship is awarded\n"; // 判断是否获得奖学金
+		cout << "3. Show this semester's evaluation\n"; // 显示本学期评价
+		cout << "4. Exit program\n";
+		cout << "Your choice: ";
+		cin >> choice;
+
+		switch (choice) {
+		case 1:
+			checkLevel();
+			break;
+		case 2:
+			checkScholarship();
+			break;
+		case 3:
+			showEvaluation();
+			break;
+		case 4:
+			cout << "Exiting program. Goodbye!\n";
+			return 0;
+		default:
+			cout << "Invalid choice. Please enter a number between 1 and 4.\n";
+			break;
+		}
+	}
+}
