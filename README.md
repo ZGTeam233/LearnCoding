@@ -9,7 +9,7 @@ Copyright(c) 2025-2026 Zilin Zheng 版权所有
 
 #### 在学……
 - Python
-- C/CMake
+- C/C++/CMake
 - Kotlin/Android
 - HTML/CSS/JavaScript
 
