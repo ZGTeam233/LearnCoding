@@ -9,10 +9,9 @@ Copyright(c) 2025-2026 Zilin Zheng 版权所有
 
 #### 在学……
 - Python
-- C
-- Android
-- Kotlin
-- HTML
+- C/CMake
+- Kotlin/Android
+- HTML/CSS/JavaScript
 
 #### 部分运行效果展示
 `/LearnTk/main.py`展示
