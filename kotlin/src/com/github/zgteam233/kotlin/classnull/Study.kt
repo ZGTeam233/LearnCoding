@@ -1,4 +1,4 @@
-package com.github.zgteam233.kotlin.learnclass
+package com.github.zgteam233.kotlin.classnull
 
 interface Study {
     fun readBooks()
