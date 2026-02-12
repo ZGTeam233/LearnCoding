@@ -1,6 +1,5 @@
 package com.github.zgteam233.kotlin.lambda
 
-import java.util.Locale
 import java.util.Locale.getDefault
 
 fun main() {
@@ -27,9 +26,15 @@ fun main() {
     println("list 中单词最长的水果为 $maxLengthFruit")
     println("")
 
-    val newList = list.map { it.uppercase(getDefault()) }
-    println("大写的  list")
+    val newList = list.filter { it.length <= 5 }
+        .map { it.uppercase(getDefault()) }
+    println("将 list 单词长度小于等于五的水果过滤出来后大写")
     for (fruit in newList) {
         print("$fruit ")
     }
+    println("")
+
+    val anyResult = list.any { it.length <= 5 }
+    val allResult = list.all { it.length <= 5 }
+    println("anyResult 是 $anyResult，allResult 是 $allResult")
 }
