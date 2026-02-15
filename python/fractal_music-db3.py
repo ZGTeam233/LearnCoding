@@ -1,8 +1,9 @@
 import pygame
-import pyaudio
+import sounddevice as sd
 import numpy as np
 import time
 import sys
+import threading
 
 
 class MultidimensionalFractalMusic:
@@ -12,14 +13,11 @@ class MultidimensionalFractalMusic:
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption('多维分形宇宙音乐生成器')
 
-        self.pa = pyaudio.PyAudio()
+        # 替换 pyaudio 为 sounddevice
         self.sample_rate = 44100
         self.chunk_size = 1024
-        self.stream = self.pa.open(format=pyaudio.paFloat32,
-                                    channels=1,
-                                    rate=self.sample_rate,
-                                    output=True,
-                                    frames_per_buffer=self.chunk_size)
+        self.output_stream = None
+        self.audio_data_queue = []  # 用于存储待播放的音频数据
 
         self.freq_base = 220
         self.time = 0
@@ -97,7 +95,8 @@ class MultidimensionalFractalMusic:
         for i in range(frame_count):
             if self.fractal_type == 0:
                 escape = self.mandelbrot(
-                    self.fractal_params['mandelbrot']['x_pos'] + 0.01 * np.sin(0.3 * self.time) + (i / frame_count) * 3.0 / 10,
+                    self.fractal_params['mandelbrot']['x_pos'] + 0.01 * np.sin(0.3 * self.time) + (
+                                i / frame_count) * 3.0 / 10,
                     self.fractal_params['mandelbrot']['y_pos'] + 0.01 * np.cos(0.2 * self.time))
             elif self.fractal_type == 1:
                 escape = self.julia(
@@ -105,7 +104,8 @@ class MultidimensionalFractalMusic:
                     -1.5 + 0.01 * np.cos(0.2 * self.time))
             elif self.fractal_type == 2:
                 escape = self.burning_ship(
-                    self.fractal_params['burning_ship']['x_pos'] + 0.01 * np.sin(0.3 * self.time) + (i / frame_count) * 3.0 / 10,
+                    self.fractal_params['burning_ship']['x_pos'] + 0.01 * np.sin(0.3 * self.time) + (
+                                i / frame_count) * 3.0 / 10,
                     self.fractal_params['burning_ship']['y_pos'] + 0.01 * np.cos(0.2 * self.time))
 
             if escape < 50:
@@ -121,13 +121,41 @@ class MultidimensionalFractalMusic:
         return signal * 0.3
 
     def audio_callback(self):
-        while self.playing:
-            audio = self.generate_frame(self.chunk_size)
-            self.stream.write(audio.astype(np.float32).tobytes())
+        # 使用 sounddevice 播放音频
+        try:
+            # 创建输出流
+            self.output_stream = sd.OutputStream(
+                samplerate=self.sample_rate,
+                channels=1,
+                dtype=np.float32
+            )
+            self.output_stream.start()
+
+            while self.playing:
+                audio = self.generate_frame(self.chunk_size)
+                # 写入音频数据
+                self.output_stream.write(audio.astype(np.float32))
+        except Exception as e:
+            print(f"音频播放错误: {e}")
+        finally:
+            if self.output_stream:
+                self.output_stream.stop()
+                self.output_stream.close()
 
     def run(self):
         print("🎵 多维分形宇宙音乐生成器启动中...")
         print("按 'm' 切换分形类型，按 'q' 退出")
+
+        # 列出可用的音频设备
+        print("\n可用音频设备:")
+        devices = sd.query_devices()
+        for i, dev in enumerate(devices):
+            if dev['max_output_channels'] > 0:
+                print(f"  {i}: {dev['name']} (输出: {dev['max_output_channels']}通道)")
+
+        # 使用默认输出设备
+        default_device = sd.default.device[1]  # 输出设备索引
+        print(f"\n使用音频设备: {default_device} - {devices[default_device]['name']}")
 
         audio_thread = threading.Thread(target=self.audio_callback)
         audio_thread.start()
@@ -141,14 +169,36 @@ class MultidimensionalFractalMusic:
                         self.playing = False
                     elif event.key == pygame.K_m:
                         self.fractal_type = (self.fractal_type + 1) % 3
+                        print(f"切换分形类型: {['Mandelbrot', 'Julia', 'Burning Ship'][self.fractal_type]}")
+                    elif event.key == pygame.K_UP:
+                        self.freq_base *= 1.1
+                        print(f"基础频率: {self.freq_base:.1f} Hz")
+                    elif event.key == pygame.K_DOWN:
+                        self.freq_base *= 0.9
+                        print(f"基础频率: {self.freq_base:.1f} Hz")
 
             fractal_image = self.generate_fractal_image()
-            pygame.surfarray.blit_array(self.screen, (fractal_image / fractal_image.max() * 255).astype(np.uint8))
+            # 转换为彩色显示
+            normalized = fractal_image / fractal_image.max() * 255
+            surface_array = np.zeros((self.screen_height, self.screen_width, 3), dtype=np.uint8)
+            # 使用HSV到RGB的简单映射
+            hue = (self.time * 10) % 255
+            surface_array[:, :, 0] = (normalized + hue) % 255  # R
+            surface_array[:, :, 1] = (normalized + hue + 85) % 255  # G
+            surface_array[:, :, 2] = (normalized + hue + 170) % 255  # B
+
+            pygame.surfarray.blit_array(self.screen, surface_array)
+
+            # 显示分形类型
+            font = pygame.font.SysFont(None, 36)
+            fractal_names = ['Mandelbrot', 'Julia', 'Burning Ship']
+            text = font.render(f"分形: {fractal_names[self.fractal_type]}", True, (255, 255, 255))
+            self.screen.blit(text, (10, 10))
+
             pygame.display.flip()
 
-        self.stream.stop_stream()
-        self.stream.close()
-        self.pa.terminate()
+        # 等待音频线程结束
+        audio_thread.join()
         pygame.quit()
         sys.exit()
 
@@ -156,11 +206,20 @@ class MultidimensionalFractalMusic:
 if __name__ == "__main__":
     try:
         import pygame
-        import pyaudio
+        import sounddevice as sd
         import numpy as np
-    except ImportError:
-        print("请先安装依赖: pip install pygame pyaudio numpy")
+    except ImportError as e:
+        print(f"缺少依赖库: {e}")
+        print("请安装依赖: pip install pygame sounddevice numpy")
         sys.exit(1)
 
-    generator = MultidimensionalFractalMusic()
-    generator.run()
+    try:
+        generator = MultidimensionalFractalMusic()
+        generator.run()
+    except KeyboardInterrupt:
+        print("\n程序被用户中断")
+    except Exception as e:
+        print(f"程序运行错误: {e}")
+        import traceback
+
+        traceback.print_exc()
