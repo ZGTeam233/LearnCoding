@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 
 //判断质数逻辑
 int isPrime(const int num) {

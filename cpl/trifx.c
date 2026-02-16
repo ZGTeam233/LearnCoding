@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <math.h>
 #define SIN0 0.0002908882046
 
