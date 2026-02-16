@@ -128,8 +128,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CppClass.cpp" />
+    <ClCompile Include="spark_flow.cpp" />
     <ClCompile Include="stu_sys.cpp" />
     <ClCompile Include="stu_sys.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="spark_flow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
