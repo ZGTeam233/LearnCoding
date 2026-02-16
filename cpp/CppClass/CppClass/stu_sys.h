@@ -28,4 +28,5 @@ public:
 };
 
 int stu_sys();
+
 #endif // STU_SYS_H
