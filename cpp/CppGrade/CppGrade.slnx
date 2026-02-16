@@ -1,7 +1,0 @@
-<Solution>
-  <Configurations>
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
-  <Project Path="CppGrade/CppGrade.vcxproj" Id="6d247a7b-6efc-4a45-bc3d-46ce7f983ce8" />
-</Solution>

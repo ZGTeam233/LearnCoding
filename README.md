@@ -1,4 +1,6 @@
-### [***请先看这个***](https://github.com/ZGTeam233/README)
+C/C++已移出本仓库，详见[仓库learn-c-cpp](https://github.com/ZGTeam233/learn-c-cpp)
+
+[***请先看这个***](https://github.com/ZGTeam233/README)
 
 ***许可证更新为Apache-2.0***
 
@@ -9,7 +11,6 @@ Copyright(c) 2025-2026 Zilin Zheng 版权所有
 
 #### 在学……
 - Python
-- C/C++/CMake
 - Kotlin/Android
 - HTML/CSS/JavaScript
 

@@ -1,7 +1,0 @@
-<Solution>
-  <Configurations>
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
-  <Project Path="SparkFlow/SparkFlow.vcxproj" Id="c3c9ac28-3af7-405a-b9f5-09c12c0ba5cd" />
-</Solution>
