@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="CppGuess/CppGuess.vcxproj" />
+  <Project Path="CppGuess/CppGuess.vcxproj" Id="618a8223-41e1-49a7-8623-c89f09005eca" />
 </Solution>
