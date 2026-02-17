@@ -15,6 +15,6 @@ Copyright(c) 2025-2026 Zilin Zheng 版权所有
 - HTML/CSS/JavaScript
 
 #### 部分运行效果展示
-`/LearnTk/main.py`展示
+`/python/tk3.py`展示
 
 ![pic](/images/001.png)
