@@ -9,7 +9,7 @@ Copyright(c) 2025-2026 Zilin Zheng 版权所有
 # LearnCoding
 这是我学习编程的所有项目的整合，什么都有
 
-#### 在学……
+#### 本仓库在学……
 - Python
 - Kotlin/Android
 - HTML/CSS/JavaScript
